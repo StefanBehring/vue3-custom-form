@@ -31,6 +31,7 @@
 </template>
 
 <script setup lang="ts">
+import type { Ref } from "vue";
 import { reactive, ref, computed, watch } from "vue";
 import InputText from "@/components/InputText.vue";
 import InputNumber from "@/components/InputNumber.vue";
@@ -39,14 +40,14 @@ import { strasseFeld } from "./fields/strasseFeld";
 import { hausnummerFeld } from "./fields/hausnummerFeld";
 import { ortFeld } from "./fields/ortFeld";
 
-const allFields: { name: string; hasError: boolean }[] = [];
+const allFields: Ref<{ name: string; hasError: boolean }[]> = ref([]);
 
 /*
   Needed inputs for fields
 */
 
 const eingabe = reactive({ name: "Stefan", hasError: false });
-allFields.push(eingabe);
+allFields.value.push(eingabe);
 const eingabeIsCorrect = computed(() => {
   return eingabe.name !== "" && !eingabe.hasError;
 });
@@ -56,21 +57,21 @@ watch(
 );
 
 const strasse = reactive({ name: "Musterstr.", hasError: false });
-allFields.push(strasse);
+allFields.value.push(strasse);
 watch(
   () => strasse.name,
   () => setBtnDisabled()
 );
 
 const hausnummer = reactive({ name: "235", hasError: false });
-allFields.push(hausnummer);
+allFields.value.push(hausnummer);
 watch(
   () => hausnummer.name,
   () => setBtnDisabled()
 );
 
 const ort = reactive({ name: "", hasError: false });
-allFields.push(ort);
+allFields.value.push(ort);
 
 /*
   Submit Button
@@ -87,7 +88,7 @@ const setBtnDisabled = () => {
   formHadChanges.value = true;
 
   let fieldHasError = false;
-  for (const field of allFields) {
+  for (const field of allFields.value) {
     if (field.hasError) {
       fieldHasError = true;
       break;
