@@ -1,29 +1,29 @@
 <template>
-  <form>
+  <form @submit="handleSubmit">
     <InputText
       v-bind="eingabeFeld"
-      v-model:model-value="eingabe.name"
+      v-model:model-value="eingabe.value"
       v-model:has-error="eingabe.hasError"
     />
     <InputText
       v-bind="strasseFeld"
-      v-model:model-value="strasse.name"
+      v-model:model-value="strasse.value"
       v-model:has-error="strasse.hasError"
     />
     <InputNumber
       v-bind="hausnummerFeld"
-      v-model:model-value="hausnummer.name"
+      v-model:model-value="hausnummer.value"
       v-model:has-error="hausnummer.hasError"
     />
     <InputText
       v-bind="ortFeld"
-      v-model:model-value="ort.name"
+      v-model:model-value="ort.value"
       v-model:has-error="ort.hasError"
     />
-    <p>{{ eingabe.name }} - {{ eingabe.hasError }} - {{ eingabeIsCorrect }}</p>
-    <p>{{ strasse.name }} - {{ strasse.hasError }}</p>
-    <p>{{ hausnummer.name }} - {{ hausnummer.hasError }}</p>
-    <p>{{ ort.name }} - {{ ort.hasError }}</p>
+    <p>{{ eingabe.value }} - {{ eingabe.hasError }} - {{ eingabeIsCorrect }}</p>
+    <p>{{ strasse.value }} - {{ strasse.hasError }}</p>
+    <p>{{ hausnummer.value }} - {{ hausnummer.hasError }}</p>
+    <p>{{ ort.value }} - {{ ort.hasError }}</p>
     <div>
       <button type="submit" :disabled="disableButton">Speichern</button>
     </div>
@@ -40,37 +40,47 @@ import { strasseFeld } from "./fields/strasseFeld";
 import { hausnummerFeld } from "./fields/hausnummerFeld";
 import { ortFeld } from "./fields/ortFeld";
 
-const allFields: Ref<{ name: string; hasError: boolean }[]> = ref([]);
+const allFields: Ref<{ id: string; value: string; hasError: boolean }[]> = ref(
+  []
+);
 
 /*
   Needed inputs for fields
 */
 
-const eingabe = reactive({ name: "Stefan", hasError: false });
+const eingabe = reactive({ id: "eingabe", value: "Stefan", hasError: false });
 allFields.value.push(eingabe);
 const eingabeIsCorrect = computed(() => {
-  return eingabe.name !== "" && !eingabe.hasError;
+  return eingabe.value !== "" && !eingabe.hasError;
 });
 watch(
-  () => eingabe.name,
+  () => eingabe.value,
   () => setBtnDisabled()
 );
 
-const strasse = reactive({ name: "Musterstr.", hasError: false });
+const strasse = reactive({
+  id: "strasse",
+  value: "Musterstr.",
+  hasError: false,
+});
 allFields.value.push(strasse);
 watch(
-  () => strasse.name,
+  () => strasse.value,
   () => setBtnDisabled()
 );
 
-const hausnummer = reactive({ name: "235", hasError: false });
+const hausnummer = reactive({
+  id: "hausnummer",
+  value: "235",
+  hasError: false,
+});
 allFields.value.push(hausnummer);
 watch(
-  () => hausnummer.name,
+  () => hausnummer.value,
   () => setBtnDisabled()
 );
 
-const ort = reactive({ name: "", hasError: false });
+const ort = reactive({ id: "ort", value: "", hasError: false });
 allFields.value.push(ort);
 
 /*
@@ -79,9 +89,10 @@ allFields.value.push(ort);
 
 const btnDisabled = ref(true);
 const formHadChanges = ref(false);
+const isSubmitting = ref(false);
 
 const disableButton = computed(() => {
-  return btnDisabled.value || !formHadChanges.value;
+  return btnDisabled.value || !formHadChanges.value || isSubmitting.value;
 });
 
 const setBtnDisabled = () => {
@@ -96,6 +107,17 @@ const setBtnDisabled = () => {
   }
 
   btnDisabled.value = fieldHasError;
+};
+
+const handleSubmit = (e: Event) => {
+  e.preventDefault();
+  isSubmitting.value = true;
+  let res = "";
+  for (const field of allFields.value) {
+    res += `${field.id}: ${field.value}\n`;
+  }
+  alert(res);
+  isSubmitting.value = false;
 };
 </script>
 
