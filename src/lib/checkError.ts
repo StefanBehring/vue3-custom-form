@@ -77,6 +77,36 @@ export function checkError(
     }
   }
 
+  // EXACT(x)
+  if (validation.some((v) => /exact\(\d*\)/.test(v))) {
+    for (const toValidate of validation) {
+      if (/exact\(\d*\)/.test(toValidate)) {
+        const exactLength = parseInt(
+          toValidate.replace("exact(", "").replace(")", "")
+        );
+        if (input.length !== exactLength) {
+          switch (language) {
+            case "de":
+              return {
+                errorMessage: `die Eingabe muss exakt ${exactLength} Zeichen lang sein`,
+                foundError: true,
+              };
+            case "en":
+              return {
+                errorMessage: `the exact length is ${exactLength} characters`,
+                foundError: true,
+              };
+            default:
+              return {
+                errorMessage: `the exact length is ${exactLength} characters`,
+                foundError: true,
+              };
+          }
+        }
+      }
+    }
+  }
+
   // RANGE(x,y)
   if (validation.some((v) => /range\(\d*,\d*\)/.test(v))) {
     for (const toValidate of validation) {
@@ -110,5 +140,6 @@ export function checkError(
       }
     }
   }
+
   return { foundError: false, errorMessage: "" };
 }
